@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Кампус СВФУ</title>
+<meta name="description" content="Поиск соседа по квартире, учебники и конспекты, подработка для студентов СВФУ, Якутск.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-tab="room">
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Кампус <span>СВФУ</span></h1>
+      <p>Для студентов Северо-Восточного федерального · Якутск</p>
+      <div class="tags"><span>#ищусоседа</span><span>#отдамконспект</span><span>#подработка</span></div>
+    </div>
+    <div class="account">
+      <span class="who" id="who"></span>
+      <button class="btn ghost small" id="logout" type="button" hidden>Выйти</button>
+      <button class="btn" id="openForm" type="button">+ Разместить объявление</button>
+    </div>
+  </header>
+
+  <p class="note demo" id="demoNote" hidden>Демо-режим: объявления сохраняются только в этом браузере. Чтобы их видели все, подключите базу — см. README.</p>
+  <p class="note" id="status" hidden></p>
+
+  <section class="panel" id="loginPanel" hidden aria-labelledby="loginTitle">
+    <h2 id="loginTitle">Вход</h2>
+    <p class="rules" id="loginHint">Укажите почту — пришлём ссылку для входа. Пароль не нужен.</p>
+    <form class="login" id="loginForm" novalidate>
+      <input class="field" id="email" type="email" autocomplete="email" placeholder="ivanov@stud.s-vfu.ru" aria-label="Почта">
+      <button class="btn" id="loginBtn" type="submit">Получить ссылку</button>
+      <button class="btn ghost" id="loginCancel" type="button">Отмена</button>
+    </form>
+    <p class="err" id="loginErr" hidden></p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button class="tab" role="tab" data-tab="room" id="tab-room"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/><circle cx="9.5" cy="13.5" r="1.6"/><circle cx="14.5" cy="13.5" r="1.6"/><path d="M7.5 20c.3-1.8 1-2.8 2-2.8s1.7 1 2 2.8M12.5 20c.3-1.8 1-2.8 2-2.8s1.7 1 2 2.8"/></svg></i><b>Сосед по квартире</b><small>Комнаты и подселение</small><span class="n" data-count="room">0</span></button>
+    <button class="tab" role="tab" data-tab="books" id="tab-books"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></svg></i><b>Учебники и конспекты</b><small>Продам, отдам, обменяю</small><span class="n" data-count="books">0</span></button>
+    <button class="tab" role="tab" data-tab="job" id="tab-job"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="m12.8 10-2.3 3.4h3l-2.3 3.4"/></svg></i><b>Подработка</b><small>Совмещается с парами</small><span class="n" data-count="job">0</span></button>
+  </nav>
+
+  <section class="panel" id="formPanel" hidden aria-labelledby="formTitle">
+    <h2 id="formTitle">Новое объявление</h2>
+    <div class="kindpick" id="kindPick">
+      <button type="button" data-kind="room">Ищу соседа</button>
+      <button type="button" data-kind="books">Учебник / конспект</button>
+      <button type="button" data-kind="job">Подработка</button>
+    </div>
+    <form id="form" novalidate>
+      <div class="grid">
+        <label class="f full">Заголовок
+          <input class="field" id="f-title" maxlength="90" placeholder="Например: Ищу соседку в 2-комнатную на Сайсары">
+        </label>
+
+        <label class="f" data-k="room">Район
+          <select class="field" id="f-district"></select>
+        </label>
+        <label class="f" data-k="room">Кого ищете
+          <select class="field" id="f-who">
+            <option value="any">Неважно</option><option value="f">Соседку</option><option value="m">Соседа</option>
+          </select>
+        </label>
+        <label class="f" data-k="room">До главного корпуса, мин
+          <input class="field" id="f-minutes" type="number" min="0" max="180" inputmode="numeric" placeholder="20">
+        </label>
+        <label class="f" data-k="room">Тип жилья
+          <select class="field" id="f-housing">
+            <option>Комната в квартире</option><option>Квартира целиком на двоих</option><option>Место в общежитии</option><option>Частный дом</option>
+          </select>
+        </label>
+
+        <label class="f" data-k="books">Что это
+          <select class="field" id="f-btype"><option>Учебник</option><option>Конспект</option><option>Методичка</option><option>Решённые задачи</option></select>
+        </label>
+        <label class="f" data-k="books">Предмет
+          <input class="field" id="f-subject" maxlength="60" placeholder="Матанализ, анатомия, сопромат…">
+        </label>
+        <label class="f" data-k="books">Институт / факультет
+          <select class="field" id="f-inst"></select>
+        </label>
+        <label class="f" data-k="books">Курс
+          <select class="field" id="f-course"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>Магистратура</option></select>
+        </label>
+
+        <label class="f" data-k="job">Работодатель
+          <input class="field" id="f-employer" maxlength="60" placeholder="Кафе, репетиторство, частное лицо">
+        </label>
+        <label class="f" data-k="job">График
+          <select class="field" id="f-schedule"></select>
+        </label>
+        <label class="f" data-k="job">Часов в неделю
+          <input class="field" id="f-hours" type="number" min="1" max="60" inputmode="numeric" placeholder="12">
+        </label>
+
+        <label class="f"><span id="priceLabel">Цена, ₽</span>
+          <input class="field" id="f-price" type="number" min="0" max="10000000" inputmode="numeric" placeholder="Пусто — договорная">
+        </label>
+        <label class="f full">Описание
+          <textarea class="field" id="f-text" maxlength="1200" placeholder="Подробности, условия, что важно знать"></textarea>
+        </label>
+        <label class="f full">Контакт для связи
+          <input class="field" id="f-contact" maxlength="80" placeholder="Telegram @ник, VK или телефон">
+        </label>
+      </div>
+    </form>
+    <p class="err" id="formErr" hidden></p>
+    <div class="actions">
+      <button class="btn" id="submit" type="button">Опубликовать</button>
+      <button class="btn ghost" id="cancel" type="button">Отмена</button>
+    </div>
+    <p class="rules">Объявление висит 60 дней. Контакт увидят все посетители сайта. Не переводите предоплату незнакомым людям.</p>
+  </section>
+
+  <div class="filters" id="filters">
+    <input type="search" class="field" id="q" placeholder="Поиск по объявлениям" aria-label="Поиск">
+    <select class="field" id="flt-a" aria-label="Фильтр"></select>
+    <select class="field" id="flt-b" aria-label="Фильтр"></select>
+    <label class="chk" id="mineWrap"><input type="checkbox" id="mine"> Мои</label>
+  </div>
+
+  <main class="feed" id="feed" aria-live="polite"></main>
+
+  <footer class="site">
+    <span>Студенческий проект, не официальный сайт СВФУ</span>
+    <span>Объявления размещают сами студенты</span>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
