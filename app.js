@@ -20,7 +20,7 @@
   }
 
   function supabaseApi() {
-    const sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+    const sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } });
     return {
       demo: false,
       async list() {
@@ -174,7 +174,7 @@
   }
 
   async function refresh() {
-    try { items = await api.list(); showStatus(""); }
+    try { items = await api.list(); if (!linkErr || me) showStatus(""); }
     catch (e) { showStatus("Не удалось загрузить объявления. Проверьте интернет и обновите страницу."); }
     ready = true; render();
   }
@@ -269,9 +269,20 @@
   });
 
   $("demoNote").hidden = !api.demo;
+
+  // Ошибка из ссылки в письме (устарела, уже использована и т. п.)
+  const linkErr = (() => {
+    const q = new URLSearchParams(location.hash.replace(/^#/, "") + "&" + location.search.replace(/^\?/, ""));
+    const code = q.get("error_code") || q.get("error");
+    if (!code) return null;
+    history.replaceState(null, "", location.pathname);
+    if (/otp_expired|expired/i.test(code + (q.get("error_description") || ""))) return "Ссылка из письма устарела или уже использована. Запросите новое письмо — подойдёт только ссылка из самого свежего.";
+    return "Не удалось войти по ссылке из письма. Запросите новое письмо и откройте его в этом же браузере.";
+  })();
   setupFilters(); syncFormKind(); render();
   (async () => {
     me = await api.user(); renderAccount();
+    if (linkErr && !me) { showStatus(linkErr); openLogin(); }
     await refresh();
     setInterval(() => { if (!document.hidden) refresh(); }, 60000);
   })();
