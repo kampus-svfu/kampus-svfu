@@ -7,7 +7,7 @@ window.KAMPUS_CONFIG = {
 
   // Разрешить вход только с этих доменов почты (пусто — любая почта).
   // Студенты СВФУ: ["stud.s-vfu.ru"]. Такая же проверка стоит в schema.sql — меняйте оба места вместе.
-  ALLOWED_EMAIL_DOMAINS: ["stud.s-vfu.ru"],
+  ALLOWED_EMAIL_DOMAINS: [],
 
   // Сколько дней объявление видно в ленте.
   LISTING_TTL_DAYS: 60

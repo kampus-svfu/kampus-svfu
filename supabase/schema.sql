@@ -39,9 +39,9 @@ create policy "listings_insert_own" on public.listings
   for insert to authenticated
   with check (
     author = auth.uid()
-    -- Публиковать могут только владельцы студенческой почты СВФУ.
-    -- Чтобы пускать любую почту, удалите строку ниже (и очистите ALLOWED_EMAIL_DOMAINS в config.js).
-    and lower(auth.jwt() ->> 'email') like '%@stud.s-vfu.ru'
+    -- Чтобы пускать только студенческую почту СВФУ, раскомментируйте строку ниже
+    -- и впишите ["stud.s-vfu.ru"] в ALLOWED_EMAIL_DOMAINS в config.js:
+    -- and lower(auth.jwt() ->> 'email') like '%@stud.s-vfu.ru'
   );
 
 create policy "listings_update_own" on public.listings
